@@ -10,6 +10,7 @@ use App\Http\Request;
 use App\Http\Response;
 use App\Loader\MQLoader;
 use PhpAmqpLib\Message\AMQPMessage;
+use PhpAmqpLib\Wire\AMQPTable;
 
 class MqSenderController
 {
@@ -114,10 +115,9 @@ class MqSenderController
         $channel = MQLoader::getConnection()->channel();
         // 声明交换机
         $channel->exchange_declare(ExchangeEnum::HEADER_EX_NAME, ExchangeEnum::HEADER, false, true, false);
-        $msg = new AMQPMessage($message, [
-            "type"    => $type,
-            "subject" => $subject,
-        ]);
+        $header = new AMQPTable(["type"=>$type, "subject"=>$subject]);
+        $msg = new AMQPMessage($message);
+        $msg->set("application_headers", $header);
         $channel->basic_publish($msg, ExchangeEnum::HEADER_EX_NAME);
         $channel->close();
         return (new Response())->setContent("{$type}:{$subject} message from {$fromUser} sent successfully.");

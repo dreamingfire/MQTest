@@ -10,6 +10,7 @@ use App\Enum\ExchangeEnum;
 use App\Loader\MQLoader;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
+use PhpAmqpLib\Wire\AMQPTable;
 
 class BaseQueueConsumer extends BaseCommand
 {
@@ -43,7 +44,7 @@ class BaseQueueConsumer extends BaseCommand
 
         $channel->exchange_declare(ExchangeEnum::HEADER_EX_NAME, ExchangeEnum::HEADER, false, true, false);
         // 绑定 头交换机
-        $channel->queue_bind($queueName,ExchangeEnum::HEADER_EX_NAME,"", false, '','');
+        $channel->queue_bind($queueName,ExchangeEnum::HEADER_EX_NAME,"", false, new AMQPTable(["type"=>$topic,"subject"=>"test","x-match" => "any"]));
 
         // 消费
         $channel->basic_consume($queueName,"",false,false,false,false, function (AMQPMessage $msg){
