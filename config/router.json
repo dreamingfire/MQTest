@@ -1,0 +1,33 @@
+{
+  "version": "1.0.0",
+  "router": {
+    "app_env": {
+      "dev": {
+        "/": {"class": "IndexController", "method": "index"},
+        "/mq/sendBaseQueue": {"class": "MqSenderController", "method": "sendBaseQueue"},
+        "/mq/sendByFanoutExchange": {"class": "MqSenderController", "method": "sendByFanoutExchange"},
+        "/mq/sendByDirectExchange": {"class": "MqSenderController", "method": "sendByDirectExchange"},
+        "/mq/sendByTopicExchange": {"class": "MqSenderController", "method": "sendByTopicExchange"},
+        "/mq/sendByHeaderExchange": {"class": "MqSenderController", "method": "sendByHeaderExchange"}
+      },
+      "test": {
+        "/": {"class": "IndexController", "method": "index"}
+      },
+      "prod": {
+        "/": {"class": "IndexController", "method": "index"}
+      }
+    }
+  },
+  "command": {
+    "consumer:q-base": {
+      "class": "Consumer\\BaseQueueConsumer",
+      "desc": "punish and consume on queue directly",
+      "argv": ["name", "topic"]
+    },
+    "consumer:q-dead": {
+      "class": "Consumer\\DeadQueueConsumer",
+      "desc": "consume dead queue",
+      "argv": ["name"]
+    }
+  }
+}

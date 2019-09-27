@@ -1,0 +1,40 @@
+#!/usr/bin/env php
+<?php
+
+use App\Loader\Router;
+
+set_time_limit(0);
+
+require_once dirname(__DIR__)."/config/bootstrap.php";
+
+unset($argv[0]);
+
+$router = new Router(dirname(__DIR__)."/config/router.json");
+if(!isset($argv[1]) || empty($argv[1])) {
+    die($router->getAllCommand(true));
+}
+$router->loadCommand($argv[1], $class, $argvKey);
+unset($argv[1]);
+$argv = array_values($argv);
+
+if(count($argv) !== count($argvKey)) {
+    die("Argument number is not matched.\n");
+}
+$argv = array_combine($argvKey, $argv);
+
+try {
+    $object = new \ReflectionClass('App\\Command\\' . $class);
+} catch (\ReflectionException $e) {
+    die($e->getMessage()."\n");
+}
+if(!$object->hasMethod("execute")) {
+    die("method execute not found in " . $object->getName()."\n");
+}
+if($object->getParentClass()->getName() !== "App\\Command\\BaseCommand") {
+    die("no support parent class found\n");
+}
+try {
+    die($object->getMethod("execute")->invoke($object->newInstance($argv)));
+} catch (\ReflectionException $e) {
+    die($e->getMessage()."\n");
+}
