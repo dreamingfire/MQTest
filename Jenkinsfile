@@ -1,7 +1,7 @@
 pipeline {
     agent any
     stages {
-        stag('Deploy') {
+        stage('Deploy') {
             steps {
                 retry(5) {
                     sh 'echo "enter retry"'
