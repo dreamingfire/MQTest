@@ -24,12 +24,6 @@ pipeline {
     }
     post {
         always {
-            steps {
-                sh '''
-                cur_dir=$(pwd)
-                echo "find current workspace dir: ${cur_dir}"
-                '''
-            }
             echo 'This will always run'
         }
         success {
